@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.util.Base64;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -131,15 +132,21 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
             @Override
             public void run() {
                 Callback cb = A0Auth0Module.this.callback;
-                if (cb != null) {
-                    final WritableMap error = Arguments.createMap();
-                    error.putString("error", "a0.session.user_cancelled");
-                    error.putString("error_description", "User cancelled the Auth");
-                    cb.invoke(error);
-                    A0Auth0Module.this.callback = null;
-                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Callback cb = A0Auth0Module.this.callback;
+                        if (cb != null) {
+                            final WritableMap error = Arguments.createMap();
+                            error.putString("error", "a0.session.user_cancelled");
+                            error.putString("error_description", "User cancelled the Auth");
+                            cb.invoke(error);
+                            A0Auth0Module.this.callback = null;
+                        }
+                    }
+                }, 10000);
             }
-        }, 100);
+        }, 10000);
     }
 
     @Override
